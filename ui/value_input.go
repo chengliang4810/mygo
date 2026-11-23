@@ -359,7 +359,8 @@ func listRowValueInput(n *node) {
 	}
 }
 func listInput(n *node) {
-	if n.disabled() || n.rowsOf == nil {
+	// A ListState reset since the list was built leaves it no frame.
+	if n.disabled() || n.rowsOf == nil || n.rowsOf.s == nil {
 		return
 	}
 	f := n.rowsOf
@@ -369,7 +370,7 @@ func listInput(n *node) {
 		// release.
 		f.dragSelect(p)
 	}
-	if f.s != nil && f.s.cursor() != nil {
+	if f.s.cursor() != nil {
 		f.navigate()
 	}
 	f.dragSelect(f.c.rt.pressed)

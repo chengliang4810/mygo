@@ -1225,7 +1225,8 @@ func (rt *engine) chooseRowAt(chain []uint64, x, y float32) {
 			continue
 		}
 		b, ok := s.valueBinding.(*listRowInput)
-		if !ok || b.f.s.Selection == nil || b.f.s.MenuKeepsSelection {
+		// A ListState reset since the frame leaves its rows no list.
+		if !ok || b.f.s == nil || b.f.s.Selection == nil || b.f.s.MenuKeepsSelection {
 			return
 		}
 		p := &b.f.s.menuPick
