@@ -34,10 +34,9 @@ type Theme struct {
 	// among prose without lifting strong text down to it: 0 for no floor.
 	LinkWeight int
 
-	// Code colors code spans, with CodeBackground behind them.
-	// InlineCodeSize scales code spans relative to the surrounding text.
-	// Zero uses CodeSize.
-	// CodeSize sets the size of code blocks in ems and the default for code spans.
+	// Code colors code spans, with CodeBackground behind them; CodeSize is
+	// the size of code blocks in ems: 0.875. InlineCodeSize is that of code
+	// spans, relative to the text around them: 0 for CodeSize.
 	Code, CodeBackground Color
 	CodeSize             float32
 	InlineCodeSize       float32
@@ -109,20 +108,19 @@ type HeadingStyle struct {
 // code editor colors it, and the spacing of the chat apps.
 func DefaultTheme(t *ui.Theme) *Theme {
 	th := &Theme{
-		FontSize:       t.FontSize,
-		Font:           t.Font,
-		CodeFont:       "monospace",
-		LineHeight:     1.5,
-		CodeLineHeight: 1.4,
-		Text:           t.Text,
-		Muted:          t.TextMuted,
-		Link:           t.Accent,
-		Strong:         t.Text,
-		StrongWeight:   600,
-		Code:           t.Text,
-		CodeBackground: t.Text.Alpha(0.07),
-		CodeSize:       0.875,
-
+		FontSize:            t.FontSize,
+		Font:                t.Font,
+		CodeFont:            "monospace",
+		LineHeight:          1.5,
+		CodeLineHeight:      1.4,
+		Text:                t.Text,
+		Muted:               t.TextMuted,
+		Link:                t.Accent,
+		Strong:              t.Text,
+		StrongWeight:        600,
+		Code:                t.Text,
+		CodeBackground:      t.Text.Alpha(0.07),
+		CodeSize:            0.875,
 		BlockSpacing:        0.75,
 		ItemSpacing:         0.25,
 		ListIndent:          1.6,
@@ -158,7 +156,11 @@ func DefaultTheme(t *ui.Theme) *Theme {
 // resolve returns th with what it leaves zero taken from def.
 func resolve(th *Theme, def *Theme) Theme {
 	if th == nil {
-		return *def
+		out := *def
+		if out.InlineCodeSize == 0 {
+			out.InlineCodeSize = out.CodeSize
+		}
+		return out
 	}
 	out := *th
 	f := func(v *float32, d float32) {

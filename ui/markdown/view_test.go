@@ -525,3 +525,28 @@ func TestLegacyCodeSizeStillSetsInlineSize(t *testing.T) {
 		}
 	}
 }
+
+func TestInlineCodeSizeWithoutTheme(t *testing.T) {
+	for i, options := range []*Options{nil, {}} {
+		var st *viewState
+		ui.NewTester(func(c *ui.Context) {
+			st = *ui.Local(View(c, "run `go test`", options), stateKey{}, newState)
+		}, 400, 200)
+		found := false
+		for _, paragraph := range st.paras {
+			for _, piece := range paragraph.p.pieces {
+				for _, span := range piece.spans {
+					if span.Text == "go test" {
+						found = true
+						if want := st.th.em(0.875); span.Size != want {
+							t.Errorf("options %d: code span size %v, want %v", i, span.Size, want)
+						}
+					}
+				}
+			}
+		}
+		if !found {
+			t.Fatalf("options %d: no code span", i)
+		}
+	}
+}
